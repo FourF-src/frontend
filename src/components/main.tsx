@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tab, Tabs, Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Card from '@/components/card';
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         box: {
@@ -10,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         tab: {
             borderBottom: '1px solid #1f364d',
-        }
+        },
     }),
 );
 
@@ -39,7 +40,13 @@ function TabPanel(props: TabPanelProps) {
 }
 
 
-
+function TimeLineList (){
+    const item = []
+    for(let i =0; i<10;i++){
+        item.push(<Card key={i} />)
+    }
+    return <div>{item}</div>;
+}
 
 
 export default function (p) {
@@ -55,7 +62,9 @@ export default function (p) {
             <Tab label="Item One" />
             <Tab label="Item Two" />
         </Tabs>
-        <TabPanel index={0} value={value}>0</TabPanel>
+        <TabPanel index={0} value={value}>
+            <TimeLineList />
+        </TabPanel>
         <TabPanel index={1} value={value}>1</TabPanel>
     </Box>
 }

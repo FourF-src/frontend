@@ -18,15 +18,15 @@ export default function(){
     const style = useStyles()
     return <Container className={style.foot}>
         <Grid container>
-            <Grid item md={4}>
+            <Grid item sm={4} xs={12}>
                 LOGO
             </Grid>
-            <Grid item md={4}>
+            <Grid item sm={4} xs={6}>
                 <Typography variant="h2">
                     h2
                 </Typography>
             </Grid>
-            <Grid item md={4}>
+            <Grid item sm={4} xs={6}>
                 <Typography variant="h2">
                     h2
                 </Typography>
