@@ -2,6 +2,7 @@ import React from 'react';
 import { Tab, Tabs, Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Card from '@/components/card';
+import List from '@/components/list';
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         box: {
@@ -59,12 +60,14 @@ export default function (p) {
 
     return <Box className={style.box}>
         <Tabs value={value} onChange={handleChange} aria-label="simple tabs example" className={style.tab}>
-            <Tab label="Item One" />
-            <Tab label="Item Two" />
+            <Tab label="Timeline" />
+            <Tab label="Pined" />
         </Tabs>
         <TabPanel index={0} value={value}>
             <TimeLineList />
         </TabPanel>
-        <TabPanel index={1} value={value}>1</TabPanel>
+        <TabPanel index={1} value={value}>
+            <List />
+        </TabPanel>
     </Box>
 }

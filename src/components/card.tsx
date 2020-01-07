@@ -1,30 +1,23 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
 import router from 'umi/router';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import { red } from '@material-ui/core/colors';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import {Card, CardContent, CardHeader, Avatar, Typography, IconButton, Button, CardActions, CardActionArea, Box} from '@material-ui/core';
+import { red, grey } from '@material-ui/core/colors';
+import { MoreVert, ExpandMore, Favorite } from '@material-ui/icons';
+import {LoremIpsum} from 'lorem-ipsum';
+const genText = new LoremIpsum({
+  sentencesPerParagraph: {
+      max: 2, min: 1
+  },
+  wordsPerSentence: {
+      max: 8, min: 4
+  }
+})
 
 const useStyles = makeStyles(theme => ({
   card: {
-    // maxWidth: 345,
-    margin: '30px auto'
-  },
-  media: {
-    height: 0,
-    // paddingTop: '56.25%', // 16:9
+    marginBottom: theme.spacing(2)
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -35,6 +28,28 @@ const useStyles = makeStyles(theme => ({
   },
   expandOpen: {
     transform: 'rotate(180deg)',
+  },
+  title:{
+    fontSize: theme.typography.fontSize*1.2
+  },
+  content:{
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(0),
+    fontWeight: theme.typography.fontWeightRegular,
+    fontSize: theme.typography.fontSize,
+  },
+  contentHover: {
+    "& a": {
+      color: red[800]
+    },
+    "&:hover": {
+      "& a":{
+        textDecoration: 'underline',
+        color: red[200]
+      },
+      color: grey[500],
+      cursor: 'pointer'
+    }
   },
   avatar: {
     backgroundColor: red[500],
@@ -49,7 +64,22 @@ export default function RecipeReviewCard() {
     setExpanded(!expanded);
   };
 
+  const content = expanded? 
+  <Typography variant="body2">
+  <Box>
+    {genText.generateParagraphs(20)}
+  </Box>
+  </Typography>:
+  <Typography onClick={handleExpandClick}  className={classes.contentHover} variant="body2">
+    {genText.generateParagraphs(4)} <a>more</a>
+  </Typography>;
 
+
+  const title = <Typography component="div" variant="h3" className={classes.title}>{genText.generateSentences(1)}</Typography>
+  const author = <Box>
+    <Typography variant="caption">{genText.generateWords(2)}</Typography>
+    <Typography variant="body2">{genText.generateSentences(1)}</Typography>
+  </Box>
   return (
     <Card className={classes.card} >
       <CardHeader
@@ -60,53 +90,23 @@ export default function RecipeReviewCard() {
         }
         action={
           <IconButton aria-label="settings">
-            <MoreVertIcon />
+            <MoreVert />
           </IconButton>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title={title}
+        subheader={author}
       />
-      <CardContent onClick={handleExpandClick}>
-        <Typography variant="body2" color="textSecondary" component="p">
-          This impressive paella is a perfect party dish and a fun meal to cook together with your
-          guests. Add 1 cup of frozen peas along with the mussels, if you like.
-        </Typography>
+      <CardContent className={classes.content}>
+        {content}
+
       </CardContent>
+
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-        <IconButton
-          className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded,
-          })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </IconButton>
+        <Button>like</Button>
+        {expanded&&    <Button>learn more</Button>}
+        <IconButton className={clsx(classes.expand, {[classes.expandOpen]: expanded})} onClick={handleExpandClick}><ExpandMore /></IconButton>
       </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph>
-            Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over medium-high
-            heat. Add chicken, shrimp and chorizo, and cook, stirring occasionally until lightly
-            browned, 6 to 8 minutes. Transfer shrimp to a large plate and set aside, leaving chicken
-            and chorizo in the pan. Add pimentón, bay leaves, garlic, tomatoes, onion, salt and
-            pepper, and cook, stirring often until thickened and fragrant, about 10 minutes. Add
-            saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.
-          </Typography>
-          <Typography>
-            <Button size="small" color="primary" onClick={()=>router.push('/article/test')}>
-              Learn More
-          </Button>
-          </Typography>
-        </CardContent>
-      </Collapse>
+
     </Card>
   );
 }
