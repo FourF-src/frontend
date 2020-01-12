@@ -2,21 +2,29 @@ import octokit from '@octokit/rest';
 import moment from 'moment';
 import {readBlob, b64toBlob} from '@/util/reader'
 import yaml from 'yaml';
+const config = require('@/config.json');
+
 const sdk = new octokit();
-const repo = 'ngate-data';
-const owner = 'FourF-src';
+const {repo, owner} = config;
+
 function tsToDate(ts:number){
     const d = moment(ts)
     return d.format('YYYYMMDD')
 }
 
-
-
-export async function getDigest(ts:number){
-    const path = '/digest/'+tsToDate(ts)+'.yaml';
+export async function getDigestList(){
+    const path = '/digest/';
     const res = await sdk.repos.getContents({repo, owner, path});
-    if (res.data && (res.data as any)['content']){
-        const content = b64toBlob((res.data as any).content)
+    if(res.data && res.data instanceof Array){
+        return res.data.slice(0, 100)
+    }
+    return []
+}
+
+export async function getDigest(path:string){
+    const res = await sdk.repos.getContents({repo, owner, path});
+    if (res.data && ! (res.data instanceof Array) && res.data.content){
+        const content = b64toBlob(res.data.content)
         const text = await readBlob(content);
         const data=  yaml.parse(text);
         if (data instanceof Array) {
