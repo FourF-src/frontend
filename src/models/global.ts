@@ -3,6 +3,7 @@ import {getDigestList, getDigest, getIssueDigest, getAllDigest} from '@/services
 import {createAction} from '@/util/createaction';
 import {IssuesListResponseItem, IssuesListCommentsResponseItem} from '@octokit/rest';
 export interface DigestItem {
+  guid: string;
   issue: number;
   likes: number;
   title: string;

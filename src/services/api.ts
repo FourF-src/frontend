@@ -2,6 +2,7 @@ import octokit from '@octokit/rest';
 import moment from 'moment';
 import {readBlob, b64toBlob} from '@/util/reader'
 import yaml from 'yaml';
+const guid = require('node-uuid');
 const config = require('@/config.json');
 
 const sdk = new octokit();
