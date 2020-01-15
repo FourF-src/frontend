@@ -49,3 +49,34 @@ export async function getFavourite(){
     }
     throw Error(String(res));
 }
+
+export async function getAllDigest(){
+    const res = await sdk.issues.listForRepo({owner, repo, labels:'digest'});
+    if (res.data && res.data instanceof Array){
+        return res.data.filter(el=>el.user.login === owner);
+    }
+    return []
+}
+
+export async function getIssueDigest(issue:number){
+    const res = await sdk.issues.listComments({owner, repo, issue_number:issue});
+    if (res.data && res.data instanceof Array){
+        const out = res.data.filter(el=>el.user.login === owner).map(el=>{
+            const item = {...(yaml.parse(el.body)), origin: el, issue};
+            return item
+        });
+
+        const likes = await getLikes(out.map(el=>el.origin.id));
+        likes.forEach((it, idx)=>{
+            out[idx].likes = it
+        })
+        return out;
+    }
+    return [];
+}
+
+function getLikes(comments:number[]){
+    const p = comments.map(c=>sdk.reactions.listForIssueComment({comment_id:c, content:'+1', owner, repo})
+        .then(res=>res.data.length));
+    return Promise.all(p);
+}

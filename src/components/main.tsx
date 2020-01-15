@@ -1,5 +1,8 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import { Tab, Tabs, Box, Typography } from '@material-ui/core';
+import { AppState } from '@/models/type';
+import { actions } from '@/models/global';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Card from '@/components/card';
 import List from '@/components/list';
@@ -40,14 +43,22 @@ function TabPanel(props: TabPanelProps) {
     );
 }
 
-
-function TimeLineList (){
-    const item = []
-    for(let i =0; i<10;i++){
-        item.push(<Card key={i} />)
+function mapStore2Props(appState:AppState){
+    return {
+        disgests: appState.global.digestList
     }
-    return <div>{item}</div>;
 }
+type Props = ReturnType<typeof mapStore2Props> & typeof actions;
+
+const TimeLineList = connect (mapStore2Props, actions)(
+    (p: Props)=>{
+        const item = []
+        for(let i of p.disgests){
+            item.push(<Card key={i.link} {...i} onLike={p.like} onDetail={p.seeDetail}/>)
+        }
+        return <div>{item}</div>;
+    }
+)
 
 
 export default function (p) {

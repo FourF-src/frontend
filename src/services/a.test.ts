@@ -1,11 +1,11 @@
-import {getDigestList, getDigest, getFavourite} from './api';
+import {getDigestList, getDigest, getFavourite, getAllDigest, getIssueDigest} from './api';
 
 it('getDigestList', (cb)=>{
     async function task(){
         const list = await getDigestList()
         if (list.length > 0) {
             const digest = await getDigest(list[0].path)
-            console.log(digest);
+            expect(digest).toBeTruthy()
         } 
     }
     task().then(_=>cb()).catch(err=>cb(err))
@@ -24,3 +24,20 @@ it('getFavourite', (cb)=>{
         cb()
     }).catch(err=>cb(err))
 }, 2000)
+
+it('getAllDigest', (cb)=>{
+    getAllDigest().then(res=>{
+        expect(res).toBeTruthy()
+        cb()
+    }).catch(err=>cb(err))
+}, 2000)
+
+
+it('getIssueDigest', (cb)=>{
+    getIssueDigest(2).then(res=>{
+        expect(res).toBeTruthy()
+        console.log(res)
+        cb()
+    }).catch(err=>cb(err))
+}, 2000)
+
