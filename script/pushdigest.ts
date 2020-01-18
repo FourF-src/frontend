@@ -1,18 +1,12 @@
 import octokit from '@octokit/rest';
-import moment from 'moment';
+import {readFileSync} from 'fs';
 import yaml from 'yaml';
-const secConfig = require('@/secret.json');
-const config = require('@/config.json');
+const secConfig = require('../secret.json');
+const config = require('../src/config.json');
 const { repo, owner } = config;
 
-function getToday() {
-    return moment().format('YYYYMMDD');
-}
 const sdk = new octokit({
-    auth: {
-        clientId: secConfig.clientId,
-        clientSecret: secConfig.clientSecret
-    }
+    auth: secConfig.token
 });
 interface Item {
     title: string;
@@ -22,14 +16,19 @@ interface Item {
     link: string;
     abstract: string;
 }
-async function main(data: Item[]) {
-    const title = '/digest/' + getToday();
+async function create(today:string, data: Item[]) {
+    const title = '/digest/' + today;
     const body = `today's digest`;
-    const res = await sdk.issues.create({ repo, owner, title, body });
+    const labels = ['digest'];
+    const res = await sdk.issues.create({ repo, owner, title, body, labels });
     if (typeof res.data.number === 'undefined') {
         return;
     }
     const issue = res.data.number;
+    await createComments(issue, data);
+    return res.data;
+}
+async function createComments(issue:number, data:Item[]){
     const p = data.map(el => sdk.issues.createComment({
         repo, owner, body: yaml.stringify(el), issue_number: issue
     }));
@@ -40,23 +39,29 @@ async function main(data: Item[]) {
         repo, owner, comment_id: el.data.id, content: "+1"
     }))
     await Promise.all(pp);
+    
+}
+async function isExist(today:string){
+    const title = '/digest/' + today;
+    const res = await sdk.issues.listForRepo({owner, repo, labels:'digest', state:'open'});
+    if (res.data && res.data instanceof Array){
+        const i = res.data.find(el=>el.title===title);
+        if (i){
+            return i
+        }
+    }
 }
 
-main([
-    {
-        "title": "原创的",
-        "tag": "original tag2",
-        "author": "fourf",
-        "description": "description",
-        "link": "https://www.github.com/223",
-        "abstract": "对于抑郁，恐怕大家多少都 原创的",
-    },
-    {
-        "title": "原创的2",
-        "tag": "original tag2",
-        "author": "fourf",
-        "description": "description",
-        "link": "https://www.github.com/11",
-        "abstract": "对于抑郁，恐怕大家多少都 原创的",
+async function main(){
+    const txt = readFileSync('./today.yaml', {encoding:'utf8'});
+    const d = yaml.parse(txt);
+    let issue = await isExist(d.date)
+    if (issue){
+        await createComments(issue.id, d.data);
+    } else{
+        issue = await create(d.date, d.data);
     }
-]).then(res=>console.log('done')).catch(res=>console.error('error'));
+    return issue;
+}
+
+main().then(res=>console.log('done... ',res!.html_url )).catch(console.error);

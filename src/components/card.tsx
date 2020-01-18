@@ -79,9 +79,7 @@ export default function RecipeReviewCard(p:Props) {
 
   const content = expanded? 
   <Typography variant="body2">
-  <Box>
     {p.abstract}
-  </Box>
   </Typography>:
   <Typography onClick={handleExpandClick}  className={classes.contentHover} variant="body2">
     {p.abstract.slice(0, 20)} <a>more</a>

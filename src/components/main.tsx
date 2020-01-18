@@ -56,9 +56,9 @@ const TimeLineList = connect (mapStore2Props, actions)(
     (p: Props)=>{
         const item = []
         for(let i of p.digests){
-            item.push(<Card key={i.link} {...i} onLike={p.like} onDetail={p.seeDetail}/>)
+            item.push(<Card key={i.guid} {...i} onLike={p.like} onDetail={p.seeDetail}/>)
         }
-        const more = p.currentIndex < p.digestPath.length ? <div style={{textAlign:'center'}}><Button onClick={p.fetchDigest}> --load more -- </Button></div>:'';
+        const more = <div style={{textAlign:'center'}}>{ p.currentIndex < p.digestPath.length ?<Button onClick={p.fetchDigest}> --load more -- </Button>:'--no any more--'}</div>;
         return <div>
         <div>{item}</div>
         {more}

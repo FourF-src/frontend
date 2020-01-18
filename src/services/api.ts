@@ -2,7 +2,7 @@ import octokit from '@octokit/rest';
 import moment from 'moment';
 import {readBlob, b64toBlob} from '@/util/reader'
 import yaml from 'yaml';
-const guid = require('node-uuid');
+const uuid = require('uuid');
 const config = require('@/config.json');
 
 const sdk = new octokit();
@@ -52,7 +52,7 @@ export async function getFavourite(){
 }
 
 export async function getAllDigest(){
-    const res = await sdk.issues.listForRepo({owner, repo, labels:'digest'});
+    const res = await sdk.issues.listForRepo({owner, repo, labels:'digest', state:'open'});
     if (res.data && res.data instanceof Array){
         return res.data.filter(el=>el.user.login === owner);
     }
@@ -63,7 +63,7 @@ export async function getIssueDigest(issue:number){
     const res = await sdk.issues.listComments({owner, repo, issue_number:issue});
     if (res.data && res.data instanceof Array){
         const out = res.data.filter(el=>el.user.login === owner).map(el=>{
-            const item = {...(yaml.parse(el.body)), origin: el, issue};
+            const item = {...(yaml.parse(el.body)), origin: el, issue, guid:uuid()};
             return item
         });
 
